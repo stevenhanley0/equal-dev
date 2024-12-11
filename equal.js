@@ -8,7 +8,7 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
     console.log("ScrollTrigger registered");
 
-    // Define headlines if not already defined
+    // Define headlines FIRST
     const headlines = [
         ".vision-headline",
         ".process-headline", 
@@ -56,12 +56,17 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
 } else {
     console.warn("GSAP or ScrollTrigger not available. Falling back to default styles.");
 
-    // Fallback: Ensure text is visible
-    const headlines = document.querySelectorAll(
-        ".vision-headline, .process-headline, .platform-headline, .team-headline, .join-headline"
-    );
+    // Use the same headlines array for the fallback
+    const headlines = [
+        ".vision-headline",
+        ".process-headline", 
+        ".platform-headline",
+        ".team-headline",
+        ".join-headline"
+    ];
 
-    headlines.forEach(element => {
+    const elements = document.querySelectorAll(headlines.join(", "));
+    elements.forEach(element => {
         element.style.opacity = "1";
         element.style.transform = "none";
     });
