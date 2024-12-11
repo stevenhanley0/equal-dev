@@ -53,10 +53,30 @@ window.addEventListener('load', () => {
                         end: "top center",
                         toggleActions: "play none none reset",
                         markers: true,
-                        invalidateOnRefresh: true
+                        invalidateOnRefresh: true,
+                        // Recalculate on scroll
+                        onUpdate: self => {
+                            self.refresh();
+                        }
                     }
                 }
             );
+
+            // Create a ResizeObserver to watch for any size changes
+            const observer = new ResizeObserver(() => {
+                ScrollTrigger.refresh();
+            });
+
+            // Observe both the element and its parent
+            observer.observe(element);
+            if (element.parentElement) {
+                observer.observe(element.parentElement);
+            }
         });
+    });
+
+    // Add window resize listener
+    window.addEventListener('resize', () => {
+        ScrollTrigger.refresh();
     });
 });
