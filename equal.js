@@ -16,13 +16,16 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     ];
 
     function initAnimations() {
-        // Force a refresh before initializing
-        ScrollTrigger.refresh();
+        // Kill any existing ScrollTriggers first
+        ScrollTrigger.getAll().forEach(st => st.kill());
         
         headlines.forEach(selector => {
             const elements = document.querySelectorAll(selector);
             
             elements.forEach(element => {
+                // Revert any existing splits
+                SplitText.revert(element);
+                
                 const split = new SplitText(element, {
                     type: "lines",
                     linesClass: "split-line"
@@ -42,11 +45,15 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                         ease: "power3.out",
                         scrollTrigger: {
                             trigger: element,
-                            start: "top bottom-=100",
-                            end: "top center",
-                            toggleActions: "play none none reset",
+                            start: "top 85%", // Adjusted for better mobile viewing
+                            toggleActions: "restart pause resume reset",
                             markers: true,
-                            invalidateOnRefresh: true
+                            invalidateOnRefresh: true,
+                            // Add specific settings for touch devices
+                            onRefresh: self => {
+                                // Force recalculation on refresh
+                                self.scroll(self.scroll());
+                            }
                         }
                     }
                 );
@@ -54,9 +61,11 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
         });
     }
 
-    // Wait for all content to load
     function waitForContent() {
         return new Promise((resolve) => {
+            // Add a minimum delay for Safari
+            const minDelay = new Promise(r => setTimeout(r, 500));
+            
             let loadedCount = 0;
             const images = [...document.querySelectorAll('img')];
             const svgs = [...document.querySelectorAll('svg')];
@@ -66,8 +75,7 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
             function checkComplete() {
                 loadedCount++;
                 if (loadedCount === totalElements) {
-                    // Add a small delay to ensure final layout
-                    setTimeout(resolve, 100);
+                    minDelay.then(resolve);
                 }
             }
 
@@ -100,20 +108,38 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                 }
             });
 
-            // If no elements to wait for, resolve immediately
+            // If no elements to wait for, still wait for min delay
             if (totalElements === 0) {
-                resolve();
+                minDelay.then(resolve);
             }
         });
     }
 
-    // Initialize everything
+    // Initialize everything with additional safeguards
     waitForContent().then(() => {
-        initAnimations();
-        // Double-check positions after a moment
+        // Initial delay for Safari
         setTimeout(() => {
-            ScrollTrigger.refresh();
-        }, 500);
+            initAnimations();
+            
+            // Force ScrollTrigger refresh after a delay
+            setTimeout(() => {
+                ScrollTrigger.refresh(true); // true forces a hard refresh
+            }, 200);
+
+            // Add resize handler for mobile orientation changes
+            window.addEventListener('resize', () => {
+                setTimeout(() => {
+                    ScrollTrigger.refresh(true);
+                }, 200);
+            });
+        }, 100);
+    });
+
+    // Add additional refresh on orientation change
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            ScrollTrigger.refresh(true);
+        }, 200);
     });
 } else {
     console.warn("GSAP or ScrollTrigger not available. Falling back to default styles.");
