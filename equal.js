@@ -25,7 +25,7 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                     split.lines,
                     {
                         opacity: 0,
-                        y: "50%"
+                        y: "100%"
                     },
                     {
                         opacity: 1,
