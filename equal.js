@@ -26,6 +26,9 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
 
     // Wait for all content to load before initializing animations
     function initAnimations() {
+        // Force a refresh before creating any ScrollTriggers
+        ScrollTrigger.refresh();
+        
         headlines.forEach(selector => {
             const elements = document.querySelectorAll(selector);
             console.log(`Found ${elements.length} elements for ${selector}`);
@@ -57,14 +60,13 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                         ease: "power3.out",
                         scrollTrigger: {
                             trigger: element,
-                            start: "top bottom-=100",
-                            end: "top center",
+                            start: "top 80%", // Adjusted trigger point
+                            end: "bottom 20%", // Adjusted end point
                             toggleActions: "play none none reset",
                             markers: true,
                             invalidateOnRefresh: true,
                             onEnter: () => console.log(`Triggered ${selector}`),
                             onLeaveBack: () => {
-                                // Reset the lines when scrolling back up
                                 gsap.set(split.lines, { 
                                     opacity: 0,
                                     y: "50%"
@@ -103,13 +105,20 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     ]).then(() => {
         // Add a small delay to ensure everything is rendered
         setTimeout(() => {
-            ScrollTrigger.refresh();
             initAnimations();
-            // Double check positions after a moment
+            // Multiple refreshes to ensure accuracy
             setTimeout(() => {
                 ScrollTrigger.refresh();
-            }, 500);
+            }, 200);
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 1000);
         }, 100);
+    });
+
+    // Add refresh on resize
+    window.addEventListener('resize', () => {
+        ScrollTrigger.refresh();
     });
 
 } else {
