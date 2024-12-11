@@ -22,15 +22,15 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
             });
 
             gsap.fromTo(
-                split.lines, // Animate the split lines instead of words
+                split.lines,
                 {
                     opacity: 0,
-                    y: "100%"
+                    y: "85%"
                 },
                 {
                     opacity: 1,
                     y: "0%",
-                    stagger: 0.15, // Slightly increased stagger for lines
+                    stagger: 0.1,
                     duration: 1,
                     ease: "power3.out",
                     scrollTrigger: {
