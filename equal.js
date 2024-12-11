@@ -25,17 +25,17 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                     split.lines,
                     {
                         opacity: 0,
-                        y: "10%"
+                        y: "15%"
                     },
                     {
                         opacity: 1,
                         y: "0%",
-                        stagger: 0.05,
+                        stagger: 0.1,
                         duration: 1,
                         ease: "power2.out",
                         scrollTrigger: {
                             trigger: element,
-                            start: "top bottom", // Trigger when element enters viewport
+                            start: "top 85%", // Trigger later when element is deeper in viewport
                             toggleActions: "play none none none"
                         }
                     }
@@ -58,17 +58,17 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                     element.querySelectorAll('span'),
                     {
                         opacity: 0,
-                        y: "10%"
+                        y: "15%"
                     },
                     {
                         opacity: 1,
                         y: "0%",
-                        stagger: 0.05,
+                        stagger: 0.1,
                         duration: 1,
                         ease: "power2.out",
                         scrollTrigger: {
                             trigger: element,
-                            start: "top bottom", // Adjusted start position
+                            start: "top 85%", // Trigger later when element is deeper in viewport
                             toggleActions: "play none none none"
                         }
                     }
