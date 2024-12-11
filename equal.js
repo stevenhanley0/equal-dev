@@ -30,9 +30,9 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                     {
                         opacity: 1,
                         y: "0%",
-                        stagger: 0.2,
+                        stagger: 0.15,
                         duration: 1,
-                        ease: "power2.out",
+                        ease: "power3.out",
                         scrollTrigger: {
                             trigger: element,
                             start: "top 50%", // Trigger later when element is deeper in viewport
