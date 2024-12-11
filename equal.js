@@ -1,5 +1,5 @@
 // Ensure GSAP is loaded
-if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined" && typeof SplitText !== "undefined") {
+if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     // Register ScrollTrigger plugin
     gsap.registerPlugin(ScrollTrigger);
 
@@ -15,16 +15,14 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined" && typeo
     headlines.forEach(selector => {
         const elements = document.querySelectorAll(selector);
         elements.forEach(element => {
-            console.log("Animating element with SplitText:", element);
+            console.log("Animating element:", element);
 
-            // Use SplitText to split lines
-            const split = new SplitText(element, { type: "lines" });
-            const lines = split.lines; // Get the split lines
-
-            // Animate the lines
             gsap.fromTo(
-                lines,
-                { opacity: 0, y: "100%" },
+                element,
+                {
+                    opacity: 0,
+                    y: "100%"
+                },
                 {
                     opacity: 1,
                     y: "0%",
@@ -33,16 +31,15 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined" && typeo
                     ease: "power3.out",
                     scrollTrigger: {
                         trigger: element,
-                        start: "top 85%",
+                        start: "top 85%", // Trigger later when element is deeper in viewport
                         toggleActions: "play none none none"
-                    },
-                    onComplete: () => split.revert() // Revert SplitText after animation
+                    }
                 }
             );
         });
     });
 } else {
-    console.warn("GSAP, ScrollTrigger, or SplitText not available. Falling back to default styles.");
+    console.warn("GSAP or ScrollTrigger not available. Falling back to default styles.");
 
     // Fallback: Ensure text is visible
     const headlines = document.querySelectorAll(
