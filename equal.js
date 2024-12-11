@@ -3,6 +3,9 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     // Register ScrollTrigger plugin
     gsap.registerPlugin(ScrollTrigger);
 
+    // Force a ScrollTrigger refresh on page load
+    ScrollTrigger.refresh();
+
     // Define the animation for the specified classes
     const headlines = [
         ".vision-headline",
@@ -14,8 +17,11 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
 
     headlines.forEach(selector => {
         const elements = document.querySelectorAll(selector);
+        
         elements.forEach(element => {
-            // Create a new SplitText instance for lines only
+            // Add debug class to track which elements are being processed
+            element.classList.add('debug-animated');
+            
             const split = new SplitText(element, {
                 type: "lines",
                 linesClass: "split-line"
@@ -35,16 +41,21 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                     ease: "power3.out",
                     scrollTrigger: {
                         trigger: element,
-                        start: "top bottom-=100",
-                        end: "top center",
-                        toggleActions: "play none none reset",
+                        start: "top 80%", // Simplified trigger point
+                        toggleActions: "restart none none reverse",
                         markers: true,
-                        invalidateOnRefresh: true
+                        onEnter: () => console.log(`Triggered: ${selector}`),
+                        onLeaveBack: () => console.log(`Reset: ${selector}`),
                     }
                 }
             );
         });
     });
+
+    // Add a delayed refresh for any dynamic content
+    setTimeout(() => {
+        ScrollTrigger.refresh();
+    }, 1000);
 } else {
     console.warn("GSAP or ScrollTrigger not available. Falling back to default styles.");
 
