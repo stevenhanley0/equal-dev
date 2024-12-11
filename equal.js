@@ -17,10 +17,10 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
         ".join-headline"
     ];
 
-    // Set initial opacity to prevent flash
+    // Set initial opacity AND transform to prevent flash
     headlines.forEach(selector => {
         document.querySelectorAll(selector).forEach(el => {
-            el.style.opacity = "0";
+            gsap.set(el, { opacity: 0, y: "50%" });
         });
     });
 
@@ -35,6 +35,12 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                 const split = new SplitText(element, {
                     type: "lines",
                     linesClass: "split-line"
+                });
+
+                // Set initial state of split lines
+                gsap.set(split.lines, { 
+                    opacity: 0,
+                    y: "50%"
                 });
 
                 gsap.fromTo(
@@ -56,7 +62,14 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                             toggleActions: "play none none reset",
                             markers: true,
                             invalidateOnRefresh: true,
-                            onEnter: () => console.log(`Triggered ${selector}`)
+                            onEnter: () => console.log(`Triggered ${selector}`),
+                            onLeaveBack: () => {
+                                // Reset the lines when scrolling back up
+                                gsap.set(split.lines, { 
+                                    opacity: 0,
+                                    y: "50%"
+                                });
+                            }
                         }
                     }
                 );
