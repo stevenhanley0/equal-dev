@@ -35,8 +35,12 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                     ease: "power3.out",
                     scrollTrigger: {
                         trigger: element,
-                        start: "top 85%",
-                        toggleActions: "play none none none"
+                        start: "top 90%",
+                        end: "bottom 20%",
+                        toggleActions: "play none none reset",
+                        once: false,
+                        mobile: true,
+                        invalidateOnRefresh: true
                     }
                 }
             );
