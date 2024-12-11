@@ -1,7 +1,7 @@
 // Ensure GSAP is loaded
 if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     // Register ScrollTrigger plugin
-    gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger, SplitText);
 
     // Define the animation for the specified classes
     const headlines = [
@@ -15,10 +15,14 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     headlines.forEach(selector => {
         const elements = document.querySelectorAll(selector);
         elements.forEach(element => {
-            console.log("Animating element:", element);
+            // Create the split
+            const split = new SplitText(element, {
+                type: "lines",
+                linesClass: "split-line"
+            });
 
-            gsap.fromTo(
-                element,
+            // Animate the split lines
+            gsap.fromTo(split.lines, 
                 {
                     opacity: 0,
                     y: "50%"
@@ -31,8 +35,10 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                     ease: "power3.out",
                     scrollTrigger: {
                         trigger: element,
-                        start: "top 85%", // Trigger later when element is deeper in viewport
-                        toggleActions: "play none none none"
+                        start: "top bottom-=100",
+                        end: "top center",
+                        toggleActions: "play none none reset",
+                        markers: true
                     }
                 }
             );
