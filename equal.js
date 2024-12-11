@@ -15,15 +15,14 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     headlines.forEach(selector => {
         const elements = document.querySelectorAll(selector);
         elements.forEach(element => {
-            // Create a new SplitText instance for each element
+            // Create a new SplitText instance for lines only
             const split = new SplitText(element, {
-                type: "lines,words",
-                linesClass: "split-line",
-                wordsClass: "split-word"
+                type: "lines",
+                linesClass: "split-line"
             });
 
             gsap.fromTo(
-                split.words, // Animate the split words instead of the element
+                split.lines, // Animate the split lines instead of words
                 {
                     opacity: 0,
                     y: "100%"
@@ -31,7 +30,7 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                 {
                     opacity: 1,
                     y: "0%",
-                    stagger: 0.1,
+                    stagger: 0.15, // Slightly increased stagger for lines
                     duration: 1,
                     ease: "power3.out",
                     scrollTrigger: {
