@@ -1,12 +1,28 @@
+// Add debug logs
+console.log("GSAP available:", typeof gsap !== "undefined");
+console.log("ScrollTrigger available:", typeof ScrollTrigger !== "undefined");
+
 // Ensure GSAP is loaded
 if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     // Register ScrollTrigger plugin
     gsap.registerPlugin(ScrollTrigger);
+    console.log("ScrollTrigger registered");
+
+    // Define headlines if not already defined
+    const headlines = [
+        ".vision-headline",
+        ".process-headline", 
+        ".platform-headline",
+        ".team-headline",
+        ".join-headline"
+    ];
 
     headlines.forEach(selector => {
         const elements = document.querySelectorAll(selector);
+        console.log(`Found ${elements.length} elements for ${selector}`);
         
         elements.forEach(element => {
+            console.log(`Creating animation for ${selector}`);
             const split = new SplitText(element, {
                 type: "lines",
                 linesClass: "split-line"
@@ -30,7 +46,8 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                         end: "top center",
                         toggleActions: "play none none reset",
                         markers: true,
-                        invalidateOnRefresh: true
+                        invalidateOnRefresh: true,
+                        onEnter: () => console.log(`Triggered ${selector}`)
                     }
                 }
             );
