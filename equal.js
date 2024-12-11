@@ -14,19 +14,19 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
 
     headlines.forEach(selector => {
         const elements = document.querySelectorAll(selector);
+
         elements.forEach(element => {
             console.log("Animating element:", element);
 
-            // Handle nested spans using SplitText if available
+            // Use SplitText for line splitting
             if (typeof SplitText !== "undefined") {
                 const split = new SplitText(element, { type: "lines" });
+                const lines = split.lines; // Get the split lines
 
+                // Animate the lines
                 gsap.fromTo(
-                    split.lines,
-                    {
-                        opacity: 0,
-                        y: "100%"
-                    },
+                    lines,
+                    { opacity: 0, y: "100%" },
                     {
                         opacity: 1,
                         y: "0%",
@@ -35,34 +35,20 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                         ease: "power3.out",
                         scrollTrigger: {
                             trigger: element,
-                            start: "top 50%", // Trigger later when element is deeper in viewport
-                            toggleActions: "play none none none"
-                        },
-                        onComplete: () => split.revert() // Revert SplitText after animation
-                    }
-                );
-            } else {
-                console.warn("SplitText plugin not available. Skipping nested span handling.");
-
-                gsap.fromTo(
-                    element,
-                    {
-                        opacity: 0,
-                        y: "100%"
-                    },
-                    {
-                        opacity: 1,
-                        y: "0%",
-                        stagger: 0.1,
-                        duration: 1,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: element,
-                            start: "top 85%", // Trigger later when element is deeper in viewport
+                            start: "top 50%",
                             toggleActions: "play none none none"
                         }
                     }
                 );
+
+                // Revert SplitText after the animation
+                ScrollTrigger.create({
+                    trigger: element,
+                    start: "top 85%",
+                    onLeave: () => split.revert()
+                });
+            } else {
+                console.warn("SplitText plugin not available. Animation skipped for:", element);
             }
         });
     });
