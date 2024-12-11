@@ -15,10 +15,15 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     headlines.forEach(selector => {
         const elements = document.querySelectorAll(selector);
         elements.forEach(element => {
-            console.log("Animating element:", element);
+            // Create a new SplitText instance for each element
+            const split = new SplitText(element, {
+                type: "lines,words",
+                linesClass: "split-line",
+                wordsClass: "split-word"
+            });
 
             gsap.fromTo(
-                element,
+                split.words, // Animate the split words instead of the element
                 {
                     opacity: 0,
                     y: "100%"
@@ -31,7 +36,7 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                     ease: "power3.out",
                     scrollTrigger: {
                         trigger: element,
-                        start: "top 85%", // Trigger later when element is deeper in viewport
+                        start: "top 85%",
                         toggleActions: "play none none none"
                     }
                 }
