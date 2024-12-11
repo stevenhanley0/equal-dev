@@ -14,43 +14,28 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
 
     headlines.forEach(selector => {
         const elements = document.querySelectorAll(selector);
-
         elements.forEach(element => {
             console.log("Animating element:", element);
 
-            // Use SplitText for line splitting
-            if (typeof SplitText !== "undefined") {
-                const split = new SplitText(element, { type: "lines" });
-                const lines = split.lines; // Get the split lines
-
-                // Animate the lines
-                gsap.fromTo(
-                    lines,
-                    { opacity: 0, y: "100%" },
-                    {
-                        opacity: 1,
-                        y: "0%",
-                        stagger: 0.1,
-                        duration: 1,
-                        ease: "power3.out",
-                        markers: true,
-                        scrollTrigger: {
-                            trigger: element,
-                            start: "top 50%",
-                            toggleActions: "play none none none"
-                        }
+            gsap.fromTo(
+                element,
+                {
+                    opacity: 0,
+                    y: "50%"
+                },
+                {
+                    opacity: 1,
+                    y: "0%",
+                    stagger: 0.075,
+                    duration: 1,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: element,
+                        start: "top 85%", // Trigger later when element is deeper in viewport
+                        toggleActions: "play none none none"
                     }
-                );
-
-                // Revert SplitText after the animation
-                ScrollTrigger.create({
-                    trigger: element,
-                    start: "top 85%",
-                    onLeave: () => split.revert()
-                });
-            } else {
-                console.warn("SplitText plugin not available. Animation skipped for:", element);
-            }
+                }
+            );
         });
     });
 } else {
