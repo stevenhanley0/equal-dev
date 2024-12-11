@@ -15,10 +15,25 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     headlines.forEach(selector => {
         const elements = document.querySelectorAll(selector);
         elements.forEach(element => {
+            // Log before split
+            console.log(`Before split for ${selector}:`, element.innerHTML);
+            
             // Create the split
             const split = new SplitText(element, {
                 type: "lines",
-                linesClass: "split-line"
+                linesClass: "split-line",
+                // Add these settings to help with splitting
+                spanWrapper: true,
+                lineThreshold: 0.5
+            });
+            
+            // Log after split
+            console.log(`After split for ${selector}:`, split.lines);
+            console.log(`Number of lines:`, split.lines.length);
+
+            // Add CSS to ensure lines are block-level
+            split.lines.forEach(line => {
+                line.style.display = "block";
             });
 
             // Animate the split lines
