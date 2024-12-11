@@ -25,17 +25,17 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                     split.lines,
                     {
                         opacity: 0,
-                        y: "15%"
+                        y: "50%"
                     },
                     {
                         opacity: 1,
                         y: "0%",
-                        stagger: 0.1,
+                        stagger: 0.2,
                         duration: 1,
                         ease: "power2.out",
                         scrollTrigger: {
                             trigger: element,
-                            start: "top 85%", // Trigger later when element is deeper in viewport
+                            start: "top 50%", // Trigger later when element is deeper in viewport
                             toggleActions: "play none none none"
                         }
                     }
