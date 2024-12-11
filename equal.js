@@ -1,140 +1,67 @@
-// Add debug logs
-console.log("GSAP available:", typeof gsap !== "undefined");
-console.log("ScrollTrigger available:", typeof ScrollTrigger !== "undefined");
-
 // Ensure GSAP is loaded
 if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     // Register ScrollTrigger plugin
     gsap.registerPlugin(ScrollTrigger);
-    console.log("ScrollTrigger registered");
 
-    // Define headlines FIRST
+    // Define the animation for the specified classes
     const headlines = [
         ".vision-headline",
-        ".process-headline", 
+        ".process-headline",
         ".platform-headline",
         ".team-headline",
         ".join-headline"
     ];
 
-    // Set initial opacity AND transform to prevent flash
     headlines.forEach(selector => {
-        document.querySelectorAll(selector).forEach(el => {
-            gsap.set(el, { opacity: 0, y: "50%" });
-        });
-    });
+        const elements = document.querySelectorAll(selector);
 
-    // Wait for all content to load before initializing animations
-    function initAnimations() {
-        // Force a refresh before creating any ScrollTriggers
-        ScrollTrigger.refresh();
-        
-        headlines.forEach(selector => {
-            const elements = document.querySelectorAll(selector);
-            console.log(`Found ${elements.length} elements for ${selector}`);
-            
-            elements.forEach(element => {
-                console.log(`Creating animation for ${selector}`);
-                const split = new SplitText(element, {
-                    type: "lines",
-                    linesClass: "split-line"
-                });
+        elements.forEach(element => {
+            console.log("Animating element:", element);
 
-                // Set initial state of split lines
-                gsap.set(split.lines, { 
-                    opacity: 0,
-                    y: "50%"
-                });
+            // Use SplitText for line splitting
+            if (typeof SplitText !== "undefined") {
+                const split = new SplitText(element, { type: "lines" });
+                const lines = split.lines; // Get the split lines
 
+                // Animate the lines
                 gsap.fromTo(
-                    split.lines,
-                    {
-                        opacity: 0,
-                        y: "50%"
-                    },
+                    lines,
+                    { opacity: 0, y: "100%" },
                     {
                         opacity: 1,
                         y: "0%",
-                        stagger: 0.075,
+                        stagger: 0.1,
                         duration: 1,
                         ease: "power3.out",
+                        markers: true,
                         scrollTrigger: {
                             trigger: element,
-                            start: "top 80%", // Adjusted trigger point
-                            end: "bottom 20%", // Adjusted end point
-                            toggleActions: "play none none reset",
-                            markers: true,
-                            invalidateOnRefresh: true,
-                            onEnter: () => console.log(`Triggered ${selector}`),
-                            onLeaveBack: () => {
-                                gsap.set(split.lines, { 
-                                    opacity: 0,
-                                    y: "50%"
-                                });
-                            }
+                            start: "top 50%",
+                            toggleActions: "play none none none"
                         }
                     }
                 );
-            });
+
+                // Revert SplitText after the animation
+                ScrollTrigger.create({
+                    trigger: element,
+                    start: "top 85%",
+                    onLeave: () => split.revert()
+                });
+            } else {
+                console.warn("SplitText plugin not available. Animation skipped for:", element);
+            }
         });
-    }
-
-    // Wait for content to load
-    Promise.all([
-        // Wait for images
-        ...Array.from(document.querySelectorAll('img')).map(img => {
-            return new Promise((resolve) => {
-                if (img.complete) resolve();
-                else img.onload = () => resolve();
-            });
-        }),
-        // Wait for SVGs
-        ...Array.from(document.querySelectorAll('svg')).map(svg => {
-            return new Promise((resolve) => {
-                if (svg.getBBox) resolve();
-                else svg.onload = () => resolve();
-            });
-        }),
-        // Wait for Lottie animations
-        ...Array.from(document.querySelectorAll('lottie-player')).map(lottie => {
-            return new Promise((resolve) => {
-                if (lottie.loaded) resolve();
-                else lottie.addEventListener('ready', () => resolve());
-            });
-        })
-    ]).then(() => {
-        // Add a small delay to ensure everything is rendered
-        setTimeout(() => {
-            initAnimations();
-            // Multiple refreshes to ensure accuracy
-            setTimeout(() => {
-                ScrollTrigger.refresh();
-            }, 200);
-            setTimeout(() => {
-                ScrollTrigger.refresh();
-            }, 1000);
-        }, 100);
     });
-
-    // Add refresh on resize
-    window.addEventListener('resize', () => {
-        ScrollTrigger.refresh();
-    });
-
 } else {
     console.warn("GSAP or ScrollTrigger not available. Falling back to default styles.");
 
-    // Use the same headlines array for the fallback
-    const headlines = [
-        ".vision-headline",
-        ".process-headline", 
-        ".platform-headline",
-        ".team-headline",
-        ".join-headline"
-    ];
+    // Fallback: Ensure text is visible
+    const headlines = document.querySelectorAll(
+        ".vision-headline, .process-headline, .platform-headline, .team-headline, .join-headline"
+    );
 
-    const elements = document.querySelectorAll(headlines.join(", "));
-    elements.forEach(element => {
+    headlines.forEach(element => {
         element.style.opacity = "1";
         element.style.transform = "none";
     });
