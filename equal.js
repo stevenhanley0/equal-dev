@@ -15,12 +15,16 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
         ".join-headline"
     ];
 
+    // Safari detection
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
     function initAnimations() {
         // Kill any existing ScrollTriggers first
         ScrollTrigger.getAll().forEach(st => st.kill());
         
         headlines.forEach(selector => {
             const elements = document.querySelectorAll(selector);
+            console.log(`Initializing ${selector} with ${elements.length} elements`); // Debug log
             
             elements.forEach(element => {
                 // Revert any existing splits
@@ -31,7 +35,7 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                     linesClass: "split-line"
                 });
 
-                gsap.fromTo(
+                const animation = gsap.fromTo(
                     split.lines,
                     {
                         opacity: 0,
@@ -43,28 +47,34 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                         stagger: 0.075,
                         duration: 1,
                         ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: element,
-                            start: "top 85%", // Adjusted for better mobile viewing
-                            toggleActions: "restart pause resume reset",
-                            markers: true,
-                            invalidateOnRefresh: true,
-                            // Add specific settings for touch devices
-                            onRefresh: self => {
-                                // Force recalculation on refresh
-                                self.scroll(self.scroll());
-                            }
-                        }
+                        paused: true // Start paused
                     }
                 );
+
+                // Create ScrollTrigger with simpler settings for Safari
+                ScrollTrigger.create({
+                    trigger: element,
+                    start: "top 80%",
+                    onEnter: () => {
+                        console.log(`Triggering animation for ${selector}`); // Debug log
+                        animation.play();
+                    },
+                    onEnterBack: () => animation.play(),
+                    onLeave: () => animation.pause(),
+                    onLeaveBack: () => animation.pause(),
+                    markers: true,
+                    // Special handling for Safari
+                    fastScrollEnd: true,
+                    preventOverlaps: true
+                });
             });
         });
     }
 
     function waitForContent() {
         return new Promise((resolve) => {
-            // Add a minimum delay for Safari
-            const minDelay = new Promise(r => setTimeout(r, 500));
+            // Longer delay for Safari
+            const minDelay = new Promise(r => setTimeout(r, isSafari ? 1000 : 500));
             
             let loadedCount = 0;
             const images = [...document.querySelectorAll('img')];
@@ -117,23 +127,28 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
 
     // Initialize everything with additional safeguards
     waitForContent().then(() => {
-        // Initial delay for Safari
+        // Force a layout recalculation
+        document.body.offsetHeight;
+        
         setTimeout(() => {
             initAnimations();
             
-            // Force ScrollTrigger refresh after a delay
-            setTimeout(() => {
-                ScrollTrigger.refresh(true); // true forces a hard refresh
-            }, 200);
-
-            // Add resize handler for mobile orientation changes
-            window.addEventListener('resize', () => {
+            // Additional refresh for Safari
+            if (isSafari) {
                 setTimeout(() => {
                     ScrollTrigger.refresh(true);
-                }, 200);
-            });
-        }, 100);
+                    console.log("Safari refresh triggered"); // Debug log
+                }, 500);
+            }
+        }, isSafari ? 200 : 100);
     });
+
+    // More aggressive refresh handling for Safari
+    if (isSafari) {
+        window.addEventListener('scroll', () => {
+            ScrollTrigger.update();
+        }, { passive: true });
+    }
 
     // Add additional refresh on orientation change
     window.addEventListener('orientationchange', () => {
